@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; media-src 'self' blob:; img-src 'self' data: blob: file:;">
+    <title>Music Player</title>
+</head>
+<body>
+   <!-- Setup Page -->
+   <div id="setupPage" class="page">
+       <div class="setup-container">
+           <div class="setup-content">
+               <div class="setup-header">
+                   <h1>Welcome to Music Player</h1>
+                   <p class="setup-subtitle">Let's set up your music library</p>
+               </div>
+
+               <div class="setup-form">
+                   <!-- Music Folder Selection -->
+                   <div class="setup-section">
+                       <div class="setup-step">
+                           <div class="step-number">1</div>
+                           <div class="step-content">
+                               <h2>Where should we store your music files?</h2>
+                               <p class="step-description">Choose a folder where uploaded music files will be saved</p>
+                               
+                               <div class="folder-selector">
+                                   <button 
+                                       type="button" 
+                                       class="btn-select-folder" 
+                                       onclick="selectMusicFolder()"
+                                   >
+                                       📁 Choose Music Folder
+                                   </button>
+                                   <div id="musicFolderDisplay" class="folder-display">
+                                       No folder selected
+                                   </div>
+                                   <div id="musicFolderSongCount" class="folder-detection-badge" style="display:none;"></div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+
+                   <!-- Thumbnails Folder Selection -->
+                   <div class="setup-section">
+                       <div class="setup-step">
+                           <div class="step-number">2</div>
+                           <div class="step-content">
+                               <h2>Where should we store your thumbnails?</h2>
+                               <p class="step-description">Choose a folder for song artwork and images</p>
+                               
+                               <div class="folder-selector">
+                                   <button 
+                                       type="button" 
+                                       class="btn-select-folder" 
+                                       onclick="selectThumbnailsFolder()"
+                                   >
+                                       📁 Choose Thumbnails Folder
+                                   </button>
+                                   <div id="thumbnailsFolderDisplay" class="folder-display">
+                                       No folder selected
+                                   </div>
+                                   <div id="thumbnailsFolderFileCount" class="folder-detection-badge" style="display:none;"></div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+
+                   <!-- Complete Setup Button -->
+                   <div class="setup-actions">
+                       <button 
+                           type="button" 
+                           id="completeSetupBtn" 
+                           class="btn-complete-setup" 
+                           disabled
+                           onclick="completeSetup()"
+                       >
+                           Complete Setup
+                       </button>
+                       <button 
+                           type="button" 
+                           id="importBackupSetupBtn" 
+                           class="btn-select-folder" 
+                           onclick="importBackupFromSetup()"
+                       >
+                           📥 Import from Backup
+                       </button>
+                   </div>
+
+                   <div id="setupError" class="setup-error" style="display: none;"></div>
+                   <p id="backupSetupStatus" class="step-description" style="display:none; margin-top:8px;"></p>
+
+                   <!-- Import Confirmation (shown after setup completes if songs found) -->
+                   <div id="importConfirmation" class="setup-section" style="display: none;">
+                       <div class="setup-step">
+                           <div class="step-number">✓</div>
+                           <div class="step-content">
+                               <h2 id="importTitle">Existing songs found!</h2>
+                               <p id="importDescription" class="step-description">We found songs in your music folder. Would you like to import them into your library?</p>
+                               <div class="setup-actions" style="display:flex; gap:12px; margin-top:12px;">
+                                   <button type="button" class="btn-complete-setup" id="importSongsBtn" onclick="importExistingSongs()">
+                                       Import Songs
+                                   </button>
+                                   <button type="button" class="btn-select-folder" id="skipImportBtn" onclick="skipImport()">
+                                       Skip
+                                   </button>
+                               </div>
+                               <p id="importStatus" class="step-description" style="display:none; margin-top:8px;"></p>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+
+   <!-- Settings Page -->
+   <div id="settingsPage" class="page">
+       <div class="settings-container">
+           <button class="settings-back-btn" type="button" onclick="goBackFromSettings()">
+               <span class="settings-back-arrow">←</span>
+               Back to music
+           </button>
+
+           <h1 class="settings-title">Settings</h1>
+
+           <!-- Theme Section -->
+           <div class="settings-card">
+               <div class="settings-card-header">
+                   <div class="settings-card-icon">🎨</div>
+                   <div>
+                       <h2 class="settings-card-title">Theme</h2>
+                       <p class="settings-card-description">Upload a custom CSS file to change the look of the app. Your CSS is applied on top of the default styles, so you only need to include the properties you want to change.</p>
+                   </div>
+               </div>
+               <div class="settings-card-body">
+                   <div id="themeStatus" class="settings-theme-status">
+                       <span class="settings-theme-status-dot"></span>
+                       <span id="themeStatusText">No custom theme loaded</span>
+                   </div>
+                   <div class="settings-file-input-wrapper">
+                       <input type="file" id="themeFileInput" accept=".css" />
+                   </div>
+                   <div class="settings-btn-row">
+                       <button type="button" id="applyThemeBtn" class="settings-action-btn primary">Apply theme</button>
+                       <button type="button" id="removeThemeBtn" class="settings-action-btn danger">Remove theme</button>
+                   </div>
+               </div>
+           </div>
+
+           <!-- Library Section -->
+           <div class="settings-card">
+               <div class="settings-card-header">
+                   <div class="settings-card-icon">📚</div>
+                   <div>
+                       <h2 class="settings-card-title">Library</h2>
+                       <p class="settings-card-description">Manage your music library and folder configuration.</p>
+                   </div>
+               </div>
+               <div class="settings-card-body">
+                   <div class="settings-btn-row">
+                       <button type="button" id="reloadLibraryBtn" class="settings-action-btn">🔄 Reload library</button>
+                       <button type="button" id="reconfigureFoldersBtn" class="settings-action-btn">🔧 Reconfigure folders</button>
+                   </div>
+               </div>
+           </div>
+
+           <!-- Backup & Restore Section -->
+           <div class="settings-card">
+               <div class="settings-card-header">
+                   <div class="settings-card-icon">💾</div>
+                   <div>
+                       <h2 class="settings-card-title">Backup & Restore</h2>
+                       <p class="settings-card-description">Export your music, thumbnails, and playlists as a ZIP file, or restore from a previous backup.</p>
+                   </div>
+               </div>
+               <div class="settings-card-body">
+                   <div class="settings-btn-row">
+                       <button type="button" id="exportBackupBtn" class="settings-action-btn">📦 Export Backup</button>
+                       <button type="button" id="importBackupBtn" class="settings-action-btn">📥 Import Backup</button>
+                   </div>
+                   <p id="backupStatus" class="settings-backup-status" style="display:none;"></p>
+               </div>
+           </div>
+       </div>
+   </div>
+
+   <!-- Starter Page -->
+   <div id="starterPage" class="page active">
+   <!-- Import notification banner (shown when new songs detected on startup) -->
+   <div id="importNotification" class="import-notification" style="display:none;">
+       <span id="importNotificationText">New songs found in your music folder.</span>
+       <div class="import-notification-actions">
+           <button id="importNotifBtn" onclick="window.handleStartupImport()">Import</button>
+           <button onclick="window.dismissImportNotification()">Dismiss</button>
+       </div>
+   </div>
+   <div class="app-shell">
+       <aside id="appSidebar" class="app-sidebar">
+           <div class="sidebar-header">
+               <div class="sidebar-brand">
+                   <span class="sidebar-brand-icon">▶</span>
+                   <div class="sidebar-brand-text">
+                       <strong>Music</strong>
+                       <span>Playlists</span>
+                   </div>
+               </div>
+               <div class="sidebar-settings-wrapper">
+                   <button id="sidebarSettingsBtn" class="sidebar-settings-btn" type="button" aria-label="Settings" aria-expanded="false">
+                       <span class="sidebar-settings-icon" aria-hidden="true">⚙</span>
+                   </button>
+                   <div id="sidebarSettingsDropdown" class="sidebar-settings-dropdown hidden">
+                       <button class="settings-dropdown-item" data-action="add-song">
+                           <span class="settings-item-icon">🎵</span>
+                           <span>Add song</span>
+                       </button>
+                       <div class="settings-dropdown-divider"></div>
+                       <button class="settings-dropdown-item" data-action="settings">
+                           <span class="settings-item-icon">⚙️</span>
+                           <span>Settings</span>
+                       </button>
+                   </div>
+               </div>
+           </div>
+
+           <button class="create-playlist-btn" type="button">+ Create playlist</button>
+
+           <nav id="sidebarPlaylists" class="sidebar-playlists" aria-label="Playlists"></nav>
+       </aside>
+
+       <main class="app-main">
+           <header class="main-header">
+               <div class="main-playlist">
+                   <p class="main-eyebrow">Playlist</p>
+               </div>
+               <div class="main-actions">
+                   <button class="main-secondary" type="button" onclick="openAddSongModal()">Add song</button>
+               </div>
+           </header>
+
+
+
+           <section class="playlist-section">
+               <div class="playlist-section-header">
+                   <h2>Playlist songs</h2>
+                   <span id="playlistSongCount">0 songs</span>
+               </div>
+               <div class="playlist-search-bar">
+                   <input type="text" id="playlistSearchInput" placeholder="Search by title or artist…" aria-label="Search songs" />
+               </div>
+               <ul id="playlistSongList" class="playlist-song-list">
+                   <li class="playlist-empty">No songs in this playlist yet.</li>
+               </ul>
+           </section>
+       </main>
+   </div>
+   </div>
+   <!-- End Starter Page -->
+
+   <!-- Bottom Player Bar (YouTube Music style) - outside pages so it persists -->
+   <div id="playerBar" class="player-bar hidden">
+       <div class="player-bar-progress">
+           <input type="range" min="1" max="100" value="0" class="seek_slider">
+       </div>
+       <div class="player-bar-inner">
+           <div class="player-bar-left">
+               <div class="player-bar-art track-art"></div>
+               <div class="player-bar-info">
+                   <div class="track-name">Track Name</div>
+                   <div class="track-artist">Track Artist</div>
+               </div>
+           </div>
+           <div class="player-bar-center">
+               <div class="random-track" onclick="randomTrack()">
+                   <i class="fas fa-random" title="shuffle"></i>
+               </div>
+               <div class="prev-track" onclick="prevTrack()">
+                   <i class="fa fa-step-backward"></i>
+               </div>
+               <div class="playpause-track" onclick="playpauseTrack()">
+                   <i class="fa fa-play-circle"></i>
+               </div>
+               <div class="next-track" onclick="nextTrack()">
+                   <i class="fa fa-step-forward"></i>
+               </div>
+               <div class="repeat-track" onclick="repeatTrack()">
+                   <i class="fa fa-repeat" title="repeat"></i>
+               </div>
+           </div>
+           <div class="player-bar-right">
+               <div class="now-playing"></div>
+               <div class="current-time">00:00</div>
+               <span class="time-sep">/</span>
+               <div class="total-duration">00:00</div>
+               <div class="volume-group">
+                   <div class="mute-track"></div>
+                   <input type="range" min="0" max="100" value="99" class="volume_slider">
+               </div>
+               <div id="wave">
+                   <span class="stroke"></span>
+                   <span class="stroke"></span>
+                   <span class="stroke"></span>
+                   <span class="stroke"></span>
+                   <span class="stroke"></span>
+               </div>
+           </div>
+       </div>
+   </div>
+
+   <!-- Add Song Modal -->
+   <div id="addSongModal" class="modal">
+       <div class="modal-content">
+           <span class="close" onclick="closeAddSongModal()">&times;</span>
+           <h2>Add Your Song</h2>
+
+           <!-- Tabs -->
+           <div class="modal-tabs">
+               <button class="modal-tab active" data-tab="file" onclick="switchAddSongTab('file')">Local File</button>
+               <button class="modal-tab" data-tab="youtube" onclick="switchAddSongTab('youtube')">YouTube</button>
+               <button class="modal-tab" data-tab="spotify" onclick="switchAddSongTab('spotify')">Spotify</button>
+           </div>
+
+           <!-- ===== Tab: Local File ===== -->
+           <div id="tabFile" class="tab-panel active">
+               <form id="addSongForm" onsubmit="handleAddSong(event)">
+                   <div class="form-group">
+                       <label for="audioFile">Audio File *</label>
+                       <input type="file" id="audioFile" accept=".mp3,.aac,.wav,.aiff,.flac,.ogg,.alac" required>
+                       <small>Supported: MP3, AAC, WAV, AIFF, FLAC, OGG, ALAC</small>
+                   </div>
+                   <div class="form-group">
+                       <label for="songName">Song Name *</label>
+                       <input type="text" id="songName" placeholder="Song name (defaults to file name)">
+                   </div>
+                   <div class="form-group">
+                       <label for="imageFile">Song Thumbnail</label>
+                       <input type="file" id="imageFile" accept="image/png,image/jpeg,image/jpg,image/webp">
+                       <small>Optional - PNG, JPG, WebP supported</small>
+                   </div>
+                   <div class="form-group">
+                       <label for="authorName">Artist/Author</label>
+                       <input type="text" id="authorName" placeholder="Artist name (optional)">
+                   </div>
+                   <div class="form-buttons">
+                       <button type="button" class="btn-cancel" onclick="closeAddSongModal()">Cancel</button>
+                       <button type="submit" class="btn-submit">Add Song</button>
+                   </div>
+               </form>
+           </div>
+
+           <!-- ===== Tab: YouTube ===== -->
+           <div id="tabYoutube" class="tab-panel">
+               <div class="form-group">
+                   <label for="youtubeUrlInput">YouTube URL</label>
+                   <div class="yt-url-row">
+                       <input type="text" id="youtubeUrlInput" placeholder="https://www.youtube.com/watch?v=..." spellcheck="false">
+                       <button type="button" id="youtubeLoadBtn" class="btn-submit" onclick="handleYoutubeLoad()">Load</button>
+                   </div>
+               </div>
+
+               <div id="youtubePreview" class="yt-preview hidden">
+                   <img id="ytThumbnail" src="" alt="Thumbnail" class="yt-thumb" />
+                   <div class="yt-info">
+                       <strong id="ytTitle"></strong>
+                       <span id="ytAuthor"></span>
+                       <span id="ytDuration"></span>
+                   </div>
+               </div>
+
+               <div id="youtubeEditFields" class="hidden">
+                   <div class="form-group">
+                       <label for="ytSongName">Song Name</label>
+                       <input type="text" id="ytSongName" placeholder="Defaults to video title">
+                   </div>
+                   <div class="form-group">
+                       <label for="ytArtist">Artist/Author</label>
+                       <input type="text" id="ytArtist" placeholder="Defaults to channel name">
+                   </div>
+               </div>
+
+               <div id="youtubeStatus" class="yt-status hidden"></div>
+
+               <div class="form-buttons">
+                   <button type="button" class="btn-cancel" onclick="closeAddSongModal()">Cancel</button>
+                   <button type="button" id="youtubeDownloadBtn" class="btn-submit" disabled onclick="handleYoutubeDownload()">Download MP3</button>
+               </div>
+           </div>
+
+           <!-- ===== Tab: Spotify ===== -->
+           <div id="tabSpotify" class="tab-panel">
+               <div class="form-group">
+                   <label for="spotifyUrlInput">Spotify Track URL</label>
+                   <div class="yt-url-row">
+                       <input type="text" id="spotifyUrlInput" placeholder="https://open.spotify.com/track/..." spellcheck="false">
+                       <button type="button" id="spotifyLoadBtn" class="btn-submit" onclick="handleSpotifyLoad()">Load</button>
+                   </div>
+               </div>
+
+               <div id="spotifyPreview" class="yt-preview hidden">
+                   <img id="spThumbnail" src="" alt="Thumbnail" class="yt-thumb" />
+                   <div class="yt-info">
+                       <strong id="spTitle"></strong>
+                       <span id="spArtist"></span>
+                   </div>
+               </div>
+
+               <div id="spotifyEditFields" class="hidden">
+                   <div class="form-group">
+                       <label for="spSongName">Song Name</label>
+                       <input type="text" id="spSongName" placeholder="Defaults to track title">
+                   </div>
+                   <div class="form-group">
+                       <label for="spArtistName">Artist/Author</label>
+                       <input type="text" id="spArtistName" placeholder="Defaults to track artist">
+                   </div>
+               </div>
+
+               <div id="spotifyStatus" class="yt-status hidden"></div>
+
+               <div class="form-buttons">
+                   <button type="button" class="btn-cancel" onclick="closeAddSongModal()">Cancel</button>
+                   <button type="button" id="spotifyDownloadBtn" class="btn-submit" disabled onclick="handleSpotifyDownload()">Download MP3</button>
+               </div>
+           </div>
+       </div>
+   </div>
+
+   <!-- Create Playlist Modal -->
+   <div id="createPlaylistModal" class="modal">
+       <div class="modal-content">
+           <span class="close" onclick="closeCreatePlaylistModal()">&times;</span>
+           <h2>Create Playlist</h2>
+           <form id="createPlaylistForm" onsubmit="handleCreatePlaylist(event)">
+               <div class="modal-tabs">
+                   <button type="button" class="modal-tab active" id="playlistTabLocal" onclick="showPlaylistTab('local')">Local</button>
+                   <button type="button" class="modal-tab" id="playlistTabYoutube" onclick="showPlaylistTab('youtube')">YouTube</button>
+               </div>
+               <div class="tab-panel active" id="playlistTabPanelLocal">
+                   <div class="form-group">
+                       <label for="playlistName">Playlist Name *</label>
+                       <input type="text" id="playlistName" required placeholder="My playlist">
+                   </div>
+                   <div class="form-group">
+                       <label for="playlistCover">Playlist Cover</label>
+                       <input type="file" id="playlistCover" accept="image/png,image/jpeg,image/jpg,image/webp">
+                       <small>Optional - PNG, JPG, WebP supported</small>
+                   </div>
+                   <div class="form-group">
+                       <label for="playlistDescription">Description</label>
+                       <textarea id="playlistDescription" rows="3" placeholder="Add a short description"></textarea>
+                   </div>
+                   <div class="form-buttons">
+                       <button type="button" class="btn-cancel" onclick="closeCreatePlaylistModal()">Cancel</button>
+                       <button type="submit" class="btn-submit">Create</button>
+                   </div>
+               </div>
+               <div class="tab-panel" id="playlistTabPanelYoutube">
+                   <div class="form-group">
+                       <label for="youtubePlaylistUrl">YouTube Playlist URL</label>
+                       <div class="yt-url-row">
+                           <input type="text" id="youtubePlaylistUrl" placeholder="https://www.youtube.com/playlist?list=...">
+                           <button type="button" class="btn-submit" onclick="loadYoutubePlaylist()">Load</button>
+                       </div>
+                   </div>
+                   <div id="youtubePlaylistPreview" class="yt-preview hidden"></div>
+                   <div class="form-buttons">
+                       <button type="button" class="btn-cancel" onclick="closeCreatePlaylistModal()">Cancel</button>
+                       <button type="button" class="btn-submit" onclick="importYoutubePlaylist()">Import Playlist</button>
+                   </div>
+               </div>
+           </form>
+       </div>
+   </div>
+</body>
+</html>

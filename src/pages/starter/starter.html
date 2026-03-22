@@ -1,0 +1,118 @@
+<div id="starterPage" class="page active">
+    <!-- Import notification banner (shown when new songs detected on startup) -->
+    <div id="importNotification" class="import-notification" style="display:none;">
+        <span id="importNotificationText">New songs found in your music folder.</span>
+        <div class="import-notification-actions">
+            <button id="importNotifBtn" class="starter-primary" onclick="window.handleStartupImport()">Import</button>
+            <button class="starter-secondary" onclick="window.dismissImportNotification()">Dismiss</button>
+        </div>
+    </div>
+    <!-- Create Playlist Modal -->
+    <div id="createPlaylistModal" class="modal" style="display:none;">
+        <form id="createPlaylistForm">
+            <h2>Create Playlist</h2>
+            <div class="modal-tabs">
+                <button type="button" class="modal-tab active" id="playlistTabLocal" onclick="showPlaylistTab('local')">Local</button>
+                <button type="button" class="modal-tab" id="playlistTabYoutube" onclick="showPlaylistTab('youtube')">YouTube</button>
+            </div>
+            <div class="tab-panel active" id="playlistTabPanelLocal">
+                <label for="playlistName">Playlist Name</label>
+                <input type="text" id="playlistName" required>
+                <label for="playlistCover">Cover Image</label>
+                <input type="file" id="playlistCover" accept="image/*">
+                <label for="playlistDescription">Description</label>
+                <input type="text" id="playlistDescription">
+                <button type="submit" class="starter-primary">Create</button>
+                <button type="button" class="starter-secondary" onclick="closeCreatePlaylistModal()">Cancel</button>
+            </div>
+            <div class="tab-panel" id="playlistTabPanelYoutube">
+                <label for="youtubePlaylistUrl">YouTube Playlist URL</label>
+                <div class="yt-url-row">
+                    <input type="text" id="youtubePlaylistUrl" placeholder="https://www.youtube.com/playlist?list=...">
+                    <button type="button" class="starter-primary" onclick="loadYoutubePlaylist()">Load</button>
+                </div>
+                <div id="youtubePlaylistPreview" class="yt-preview hidden"></div>
+                <button type="button" class="starter-primary" onclick="importYoutubePlaylist()">Import Playlist</button>
+                <button type="button" class="starter-secondary" onclick="closeCreatePlaylistModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <div class="starter-layout">
+        <aside class="starter-sidebar">
+            <div class="starter-brand">
+                <span class="brand-icon">▶</span>
+                <div>
+                    <h2>Music</h2>
+                    <p>Playlists</p>
+                </div>
+            </div>
+
+            <div class="starter-search">
+                <input type="text" placeholder="Search playlists" aria-label="Search playlists" />
+            </div>
+            <div class="starter-sidebar-actions">
+                <button class="starter-ghost" onclick="openAddSongModal()">Add song</button>
+                <button class="starter-ghost" onclick="goToSetup()" style="font-size: 0.85em; opacity: 0.7;">⚙️ Reconfigure folders</button>
+            </div>
+        </aside>
+
+        <section class="starter-main">
+            <header class="starter-hero">
+                <div class="starter-hero-text">
+                    <p class="starter-kicker">Welcome back</p>
+                    <p id="starterPlaylistDescription">A blend of your recent favorites and new finds.</p>
+                    <div class="starter-meta">
+                        <span id="starterPlaylistTracks">42 tracks</span>
+                        <span class="starter-divider">•</span>
+                        <span id="starterPlaylistDuration">2h 18m</span>
+                    </div>
+                    <div class="starter-actions">
+                        <button id="startBtn" class="starter-primary" onclick="goToPlayer()">Start listening</button>
+                        <button id="addSongBtn" class="starter-secondary" onclick="openAddSongModal()">Add songs</button>
+                    </div>
+                </div>
+                <div class="starter-hero-card">
+                    <div class="starter-visual">
+                        <span class="starter-visual-ring"></span>
+                        <span class="starter-visual-ring"></span>
+                        <span class="starter-visual-ring"></span>
+                    </div>
+                    <div class="starter-hero-info">
+                        <h3>Now curated for you</h3>
+                        <p>Pick a playlist on the left to preview the vibe before you play.</p>
+                    </div>
+                </div>
+            </header>
+
+            <div class="starter-content">
+                <div class="starter-section">
+                    <h2>Featured highlights</h2>
+                    <div class="starter-grid">
+                        <article class="starter-tile">
+                            <h3>Smooth transitions</h3>
+                            <p>Automatically crossfade between tracks and keep the momentum going.</p>
+                        </article>
+                        <article class="starter-tile">
+                            <h3>Offline ready</h3>
+                            <p>All your added songs stay available for instant playback.</p>
+                        </article>
+                        <article class="starter-tile">
+                            <h3>Fresh picks</h3>
+                            <p>Quickly reload your library and find recently added songs.</p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="starter-section starter-preview">
+                    <h2>Up next</h2>
+                    <ul class="starter-tracklist">
+                        <li><span>01</span><span>ceiling fan ♫</span><span>2:49</span></li>
+                        <li><span>02</span><span>Panoramic Feelings</span><span>3:11</span></li>
+                        <li><span>03</span><span>Snowy</span><span>1:45</span></li>
+                        <li><span>04</span><span>Fragility</span><span>2:58</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

@@ -1,0 +1,95 @@
+<div id="setupPage" class="page">
+    <div class="setup-container">
+        <div class="setup-content">
+            <div class="setup-header">
+                <h1>Welcome to Music Player</h1>
+                <p class="setup-subtitle">Let's set up your music library</p>
+            </div>
+
+            <div class="setup-form">
+                <!-- Music Folder Selection -->
+                <div class="setup-section">
+                    <div class="setup-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h2>Where should we store your music files?</h2>
+                            <p class="step-description">Choose a folder where uploaded music files will be saved</p>
+                            
+                            <div class="folder-selector">
+                                <button 
+                                    type="button" 
+                                    class="btn-select-folder" 
+                                    onclick="selectMusicFolder()"
+                                >
+                                    📁 Choose Music Folder
+                                </button>
+                                <div id="musicFolderDisplay" class="folder-display">
+                                    No folder selected
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thumbnails Folder Selection -->
+                <div class="setup-section">
+                    <div class="setup-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h2>Where should we store your thumbnails?</h2>
+                            <p class="step-description">Choose a folder for song artwork and images</p>
+                            
+                            <div class="folder-selector">
+                                <button 
+                                    type="button" 
+                                    class="btn-select-folder" 
+                                    onclick="selectThumbnailsFolder()"
+                                >
+                                    📁 Choose Thumbnails Folder
+                                </button>
+                                <div id="thumbnailsFolderDisplay" class="folder-display">
+                                    No folder selected
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complete Setup Button -->
+                <div class="setup-actions">
+                    <button 
+                        type="button" 
+                        id="completeSetupBtn" 
+                        class="btn-complete-setup" 
+                        disabled
+                        onclick="completeSetup()"
+                    >
+                        Complete Setup
+                    </button>
+                </div>
+
+                <div id="setupError" class="setup-error" style="display: none;"></div>
+
+                <!-- Import Confirmation (shown after setup completes if songs found) -->
+                <div id="importConfirmation" class="setup-section" style="display: none;">
+                    <div class="setup-step">
+                        <div class="step-number">✓</div>
+                        <div class="step-content">
+                            <h2 id="importTitle">Existing songs found!</h2>
+                            <p id="importDescription" class="step-description">We found songs in your music folder. Would you like to import them into your library?</p>
+                            <div class="setup-actions" style="display:flex; gap:12px; margin-top:12px;">
+                                <button type="button" class="btn-complete-setup" id="importSongsBtn" onclick="importExistingSongs()">
+                                    Import Songs
+                                </button>
+                                <button type="button" class="btn-select-folder" id="skipImportBtn" onclick="skipImport()">
+                                    Skip
+                                </button>
+                            </div>
+                            <p id="importStatus" class="step-description" style="display:none; margin-top:8px;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
